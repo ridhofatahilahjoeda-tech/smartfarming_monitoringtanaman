@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../themes/app_theme.dart';
 
 class HasilScanPage extends StatelessWidget {
@@ -29,7 +30,7 @@ class HasilScanPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
-              _showInfoMessage(context, 'Fitur share akan segera hadir');
+              _shareResult(context);
             },
           ),
         ],
@@ -69,6 +70,63 @@ class HasilScanPage extends StatelessWidget {
     );
   }
 
+  // ==================== FUNGSI SHARE ====================
+  Future<void> _shareResult(BuildContext context) async {
+    // Konversi List<dynamic> ke List<String> dengan aman
+    final List<String> gejala = List<String>.from(hasilDeteksi['gejala'] ?? []);
+    final List<String> rekomendasi = List<String>.from(hasilDeteksi['rekomendasi'] ?? []);
+    
+    // Membuat teks untuk dibagikan
+    String shareText = '''
+🌿 *HASIL DETEKSI SMART FARMING* 🌿
+
+📋 *Penyakit:* ${hasilDeteksi['penyakit']}
+📊 *Tingkat Keyakinan:* ${hasilDeteksi['tingkatKeyakinan']}%
+⚠️ *Tingkat Keparahan:* ${hasilDeteksi['tingkatKeparahan']}
+
+📝 *Gejala:*
+${_formatList(gejala)}
+
+💡 *Rekomendasi:*
+${_formatList(rekomendasi)}
+
+---
+✨ Scan menggunakan aplikasi Smart Farming
+    ''';
+    
+    try {
+      // Jika ada gambar, share teks + gambar
+      if (capturedImage != null && capturedImage!.existsSync()) {
+        await Share.shareXFiles(
+          [XFile(capturedImage!.path)],
+          text: shareText,
+        );
+      } else {
+        // Jika tidak ada gambar, share teks saja
+        await Share.share(shareText);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal membagikan hasil: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  String _formatList(List<String> items) {
+    if (items.isEmpty) return '   - Tidak ada data\n';
+    String result = '';
+    for (int i = 0; i < items.length; i++) {
+      result += '   ${i + 1}. ${items[i]}\n';
+    }
+    return result;
+  }
+
   // ==================== CARD GAMBAR ====================
   Widget _buildImageCard(bool isHealthy) {
     return Container(
@@ -99,7 +157,6 @@ class HasilScanPage extends StatelessWidget {
                       capturedImage!,
                       fit: BoxFit.cover,
                     ),
-                    // Overlay gradient
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -112,7 +169,6 @@ class HasilScanPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Badge status
                     Positioned(
                       bottom: 16,
                       left: 16,
@@ -285,7 +341,7 @@ class HasilScanPage extends StatelessWidget {
     );
   }
 
-  // ==================== CARD TINGKAT KEYAKINAN (Progress Bar Halus) ====================
+  // ==================== CARD TINGKAT KEYAKINAN ====================
   Widget _buildConfidenceCard(int confidence, Color confidenceColor) {
     return Container(
       decoration: BoxDecoration(
@@ -641,30 +697,6 @@ class HasilScanPage extends StatelessWidget {
             ],
           ),
           backgroundColor: AppTheme.primaryGreen,
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-          elevation: 8,
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
-    }
-  }
-
-  void _showInfoMessage(BuildContext context, String message) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.info_outline, color: Colors.white, size: 24),
-              const SizedBox(width: 12),
-              Expanded(child: Text(message)),
-            ],
-          ),
-          backgroundColor: const Color(0xFF0288D1),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
           elevation: 8,

@@ -74,6 +74,7 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
       appBar: AppBar(
         title: const Text('Riwayat Scan'),
         backgroundColor: AppTheme.primaryGreen,
+        elevation: 0,
         actions: [
           if (_riwayatList.isNotEmpty)
             IconButton(
@@ -119,11 +120,15 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                 final isSehat = riwayat.penyakit == 'Sehat';
                 final Color statusColor = isSehat ? Colors.green : Colors.orange;
                 
+                // Cek apakah ada gambar
+                final bool hasImage = riwayat.imagePath.isNotEmpty && File(riwayat.imagePath).existsSync();
+                
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 2,
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
@@ -138,23 +143,33 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                         ),
                       );
                     },
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
-                          // Icon berdasarkan status
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Icon(
-                              isSehat ? Icons.health_and_safety : Icons.sick,
-                              color: statusColor,
-                              size: 28,
+                          // Thumbnail Gambar (jika ada) atau Icon (jika tidak ada)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: statusColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: hasImage
+                                  ? Image.file(
+                                      File(riwayat.imagePath),
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Icon(
+                                      isSehat ? Icons.health_and_safety : Icons.sick,
+                                      size: 32,
+                                      color: statusColor,
+                                    ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -189,27 +204,27 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 6),
                                 Row(
                                   children: [
                                     Container(
-                                      width: 60,
-                                      height: 4,
+                                      width: 80,
+                                      height: 6,
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.circular(2),
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(3),
                                       ),
                                       child: FractionallySizedBox(
                                         widthFactor: riwayat.confidence / 100,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             color: statusColor,
-                                            borderRadius: BorderRadius.circular(2),
+                                            borderRadius: BorderRadius.circular(3),
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 10),
                                     Text(
                                       '${riwayat.confidence}%',
                                       style: TextStyle(
@@ -231,6 +246,9 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                               final confirmed = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
                                   title: const Text('Hapus Riwayat'),
                                   content: Text('Hapus scan "${riwayat.penyakit}" dari riwayat?'),
                                   actions: [
@@ -243,6 +261,9 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red,
                                         foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
                                       ),
                                       child: const Text('Hapus'),
                                     ),
@@ -266,7 +287,7 @@ class _RiwayatScanPageState extends State<RiwayatScanPage> {
                             },
                           ),
                           
-                          const Icon(Icons.chevron_right, color: Colors.grey),
+                          const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
                         ],
                       ),
                     ),
