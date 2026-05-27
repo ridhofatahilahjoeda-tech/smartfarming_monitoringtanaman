@@ -14,10 +14,14 @@ class ScanPage extends StatefulWidget {
   State<ScanPage> createState() => _ScanPageState();
 }
 
-class _ScanPageState extends State<ScanPage> {
+class _ScanPageState extends State<ScanPage> with TickerProviderStateMixin {
   bool _isLoading = false;
   bool _isImageSelected = false;
   File? _selectedImage;
+  
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+  late AnimationController _fadeController;
   
   final ImagePicker _picker = ImagePicker();
 
@@ -25,13 +29,30 @@ class _ScanPageState extends State<ScanPage> {
   void initState() {
     super.initState();
     _loadRiwayat();
+    
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(_pulseController);
+    
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _fadeController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadRiwayat() async {
     await RiwayatService.loadRiwayat();
   }
 
-  // Fungsi untuk memilih gambar dari galeri
   Future<void> _pickImageFromGallery() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -52,7 +73,6 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // Fungsi untuk mengambil foto dari kamera
   Future<void> _pickImageFromCamera() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -73,7 +93,6 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // Simulasi analisis gambar
   void _analyzeImage() async {
     setState(() {
       _isLoading = true;
@@ -177,7 +196,6 @@ class _ScanPageState extends State<ScanPage> {
         };
     }
     
-    // Simpan ke riwayat
     final now = DateTime.now();
     final riwayat = RiwayatScanModel(
       id: now.millisecondsSinceEpoch.toString(),
@@ -220,6 +238,7 @@ class _ScanPageState extends State<ScanPage> {
           content: Text(message),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
     }
@@ -228,15 +247,15 @@ class _ScanPageState extends State<ScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.camera_alt, size: 22),
+            const Icon(Icons.camera_alt, size: 22, color: Colors.white),
             const SizedBox(width: 8),
             const Text(
-              'Scan Tanaman',
+              'Scan',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -249,7 +268,7 @@ class _ScanPageState extends State<ScanPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -264,206 +283,249 @@ class _ScanPageState extends State<ScanPage> {
       body: _isLoading
           ? Container(
               color: Colors.black.withOpacity(0.9),
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
+                    const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                         AppTheme.primaryGreen,
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      '🔬 Menganalisis gambar...\nMohon tunggu sebentar',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                    const SizedBox(height: 20),
+                    FadeTransition(
+                      opacity: _pulseAnimation,
+                      child: const Text(
+                        '🔬 Menganalisis gambar...\nMohon tunggu sebentar',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Area Preview Gambar
-                  Container(
-                    height: 350,
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: _isImageSelected && _selectedImage != null
-                        ? Stack(
-                            children: [
-                              Image.file(
-                                _selectedImage!,
-                                width: double.infinity,
-                                height: 350,
-                                fit: BoxFit.cover,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.5),
-                                    ],
+          : FadeTransition(
+              opacity: _fadeController,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 360,
+                      width: double.infinity,
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: _isImageSelected && _selectedImage != null
+                            ? Stack(
+                                children: [
+                                  Image.file(
+                                    _selectedImage!,
+                                    width: double.infinity,
+                                    height: 360,
+                                    fit: BoxFit.cover,
                                   ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 16,
-                                left: 16,
-                                right: 16,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withOpacity(0.6),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 20,
+                                    left: 20,
+                                    right: 20,
+                                    child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 16,
-                                        vertical: 8,
+                                        vertical: 10,
                                       ),
                                       decoration: BoxDecoration(
                                         color: AppTheme.primaryGreen,
-                                        borderRadius: BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(30),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppTheme.primaryGreen.withOpacity(0.4),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
                                       child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.check_circle,
                                             color: Colors.white,
-                                            size: 16,
+                                            size: 18,
                                           ),
-                                          SizedBox(width: 8),
+                                          SizedBox(width: 10),
                                           Text(
                                             'Gambar siap dianalisis',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 12,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
+                                  ),
+                                ],
+                              )
+                            : Container(
+                                color: Colors.grey[100],
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TweenAnimationBuilder(
+                                      tween: Tween<double>(begin: 0.8, end: 1.0),
+                                      duration: const Duration(milliseconds: 1000),
+                                      curve: Curves.elasticOut,
+                                      builder: (context, double value, child) {
+                                        return Transform.scale(
+                                          scale: value,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(24),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryGreen.withOpacity(0.1),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.photo_camera,
+                                              size: 60,
+                                              color: AppTheme.primaryGreen.withOpacity(0.6),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      'Belum ada gambar',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Ambil foto atau pilih dari galeri',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ],
-                          )
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 8),
+                    
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: _pickImageFromCamera,
+                            icon: const Icon(Icons.camera_alt, size: 24),
+                            label: const Text(
+                              'Ambil Foto',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryGreen,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              minimumSize: const Size(double.infinity, 56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          OutlinedButton.icon(
+                            onPressed: _pickImageFromGallery,
+                            icon: const Icon(Icons.photo_library, size: 24),
+                            label: const Text(
+                              'Pilih dari Galeri',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppTheme.primaryGreen,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              minimumSize: const Size(double.infinity, 56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              side: BorderSide(color: AppTheme.primaryGreen, width: 1.5),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 32),
+                          
+                          Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.blue.shade100),
+                            ),
+                            child: Row(
                               children: [
                                 Icon(
-                                  Icons.photo_camera,
-                                  size: 80,
-                                  color: Colors.grey[400],
+                                  Icons.info_outline,
+                                  color: Colors.blue.shade700,
+                                  size: 22,
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Belum ada gambar',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Ambil foto atau pilih dari galeri',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[400],
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Text(
+                                    'Fitur ini akan mendeteksi penyakit tanaman berdasarkan gambar daun. Hasil deteksi bersifat simulasi untuk demo.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      height: 1.4,
+                                      color: Colors.blue.shade800,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        // Tombol Kamera
-                        ElevatedButton.icon(
-                          onPressed: _pickImageFromCamera,
-                          icon: const Icon(Icons.camera_alt, size: 28),
-                          label: const Text(
-                            'Ambil Foto',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryGreen,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            minimumSize: const Size(double.infinity, 54),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Tombol Galeri
-                        OutlinedButton.icon(
-                          onPressed: _pickImageFromGallery,
-                          icon: const Icon(Icons.photo_library, size: 28),
-                          label: const Text(
-                            'Pilih dari Galeri',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppTheme.primaryGreen,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            minimumSize: const Size(double.infinity, 54),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            side: BorderSide(color: AppTheme.primaryGreen),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Informasi tambahan
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: Colors.blue.shade700,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Fitur ini akan mendeteksi penyakit tanaman berdasarkan gambar daun. Hasil deteksi bersifat simulasi untuk demo.',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blue.shade700,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                ],
+                    
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
     );
