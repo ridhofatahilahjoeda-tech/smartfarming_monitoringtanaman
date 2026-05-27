@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../themes/app_theme.dart';
 import 'login_screen.dart';
 import 'edit_profil_screen.dart';
+import 'bantuan_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
@@ -423,13 +424,19 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     },
                   ),
                   
+                  // Menu Bantuan - SEKARANG BERFUNGSI (navigasi ke halaman bantuan)
                   _buildMenuTile(
                     icon: Icons.help_outline,
                     title: 'Bantuan',
                     subtitle: 'Pusat bantuan dan FAQ',
                     color: Colors.teal,
                     onTap: () {
-                      _showMessage(context, 'Fitur Bantuan akan segera hadir');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BantuanScreen(),
+                        ),
+                      );
                     },
                   ),
                   
