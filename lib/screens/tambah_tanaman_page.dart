@@ -83,7 +83,6 @@ class _TambahTanamanPageState extends State<TambahTanamanPage> {
     });
   }
 
-  // Fungsi untuk memilih gambar
   Future<void> _pickImage() async {
     showModalBottomSheet(
       context: context,
@@ -219,6 +218,8 @@ class _TambahTanamanPageState extends State<TambahTanamanPage> {
       appBar: AppBar(
         title: const Text('Tambah Tanaman Baru'),
         backgroundColor: AppTheme.primaryGreen,
+        centerTitle: true,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -371,6 +372,7 @@ class _TambahTanamanPageState extends State<TambahTanamanPage> {
                     onPressed: _addRiwayat,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
                       shape: const CircleBorder(),
                     ),
                     child: const Icon(Icons.add),
@@ -398,13 +400,24 @@ class _TambahTanamanPageState extends State<TambahTanamanPage> {
               ),
               const SizedBox(height: 24),
               
-              // Tombol Simpan
+              // ==================== TOMBOL SIMPAN & BATAL ====================
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Batal'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                        side: BorderSide(color: Colors.grey[400]!),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Batal',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -413,12 +426,22 @@ class _TambahTanamanPageState extends State<TambahTanamanPage> {
                       onPressed: _saveTanaman,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
                       ),
-                      child: const Text('Simpan'),
+                      child: const Text(
+                        'Simpan',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),

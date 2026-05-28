@@ -78,7 +78,7 @@ class HasilScanPage extends StatelessWidget {
     
     // Membuat teks untuk dibagikan
     String shareText = '''
-🌿 *HASIL DETEKSI SMART FARMING* 🌿
+🌿 *HASIL DETEKSI* 🌿
 
 📋 *Penyakit:* ${hasilDeteksi['penyakit']}
 📊 *Tingkat Keyakinan:* ${hasilDeteksi['tingkatKeyakinan']}%
@@ -90,7 +90,7 @@ ${_formatList(gejala)}
 💡 *Rekomendasi:*
 ${_formatList(rekomendasi)}
 
----
+
 ✨ Scan menggunakan aplikasi Smart Farming
     ''';
     

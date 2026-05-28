@@ -365,6 +365,7 @@ class _EditTanamanPageState extends State<EditTanamanPage> {
                     onPressed: _addRiwayat,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
                       shape: const CircleBorder(),
                     ),
                     child: const Icon(Icons.add),
@@ -406,6 +407,7 @@ class _EditTanamanPageState extends State<EditTanamanPage> {
                       onPressed: _updateTanaman,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryGreen,
+                        foregroundColor: Colors.white,
                       ),
                       child: const Text('Simpan Perubahan'),
                     ),

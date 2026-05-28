@@ -478,10 +478,9 @@ class _PerangkatIotScreenState extends State<PerangkatIotScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.lightbulb, color: Colors.amber.shade700, size: 24),
                 const SizedBox(width: 8),
                 const Text(
-                  '💡 Rekomendasi Sistem IoT',
+                  'Rekomendasi Sistem IoT',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
