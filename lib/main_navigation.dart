@@ -55,12 +55,85 @@ class _MainNavigationState extends State<MainNavigation> {
         selectedItemColor: AppTheme.primaryGreen,
         unselectedItemColor: Colors.grey,
         elevation: 8,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.eco), label: 'Tanaman Saya'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
-          BottomNavigationBarItem(icon: Icon(Icons.sensors), label: 'Perangkat IoT'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Beranda',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.eco_outlined),
+            activeIcon: Icon(Icons.eco),
+            label: 'Tanaman Saya',
+          ),
+          // Icon Scan bentuk kotak/bingkai []
+          BottomNavigationBarItem(
+            icon: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryGreen,
+                      AppTheme.secondaryGreen,
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryGreen.withOpacity(0.4),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.crop_free_outlined, // Bentuk kotak/bingkai []
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+            activeIcon: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryGreen,
+                      AppTheme.secondaryGreen,
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryGreen.withOpacity(0.6),
+                      blurRadius: 12,
+                      spreadRadius: 3,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.crop_free, // Versi aktif
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+            label: 'Scan',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.sensors_outlined),
+            activeIcon: Icon(Icons.sensors),
+            label: 'Perangkat IoT',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profil',
+          ),
         ],
       ),
     );
