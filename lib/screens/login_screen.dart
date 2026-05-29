@@ -6,7 +6,7 @@ import 'lupa_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function(Locale)? onLanguageChanged;
-  
+
   const LoginScreen({super.key, this.onLanguageChanged});
 
   @override
@@ -17,11 +17,11 @@ class _LoginScreenState extends State<LoginScreen> {
   // Controller untuk mengambil teks dari input field
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   // State untuk menyembunyikan/menampilkan password
   bool _isPasswordHidden = true;
   bool _rememberMe = false;
-  
+
   // Key untuk form validasi
   final _formKey = GlobalKey<FormState>();
 
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
           duration: Duration(seconds: 2),
         ),
       );
-      
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainNavigation()),
@@ -95,9 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       scale: value,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
+                        decoration: BoxDecoration(shape: BoxShape.circle),
                         child: Icon(
                           Icons.eco,
                           size: 85,
@@ -107,10 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                 ),
-                
+
                 // Judul
                 const Text(
-                  'Selamat Datang!',
+                  'Selamat Datang, Di TaniGO!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -119,18 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Subtitle
                 Text(
                   'Masuk ke akun Anda untuk melanjutkan',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Input Email
                 TextFormField(
                   controller: _emailController,
@@ -147,13 +142,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryGreen, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppTheme.primaryGreen,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: _validateEmail,
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Input Password
                 TextFormField(
                   controller: _passwordController,
@@ -182,13 +180,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryGreen, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppTheme.primaryGreen,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: _validatePassword,
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Row untuk Remember Me dan Lupa Password
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                    
+
                     // Tombol Lupa Password
                     TextButton(
                       onPressed: () {
@@ -248,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Tombol Masuk
                 ElevatedButton(
                   onPressed: _handleLogin,
@@ -267,42 +268,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Divider "Atau"
                 Row(
                   children: [
                     Expanded(
-                      child: Divider(
-                        color: Colors.grey[300],
-                        thickness: 1,
-                      ),
+                      child: Divider(color: Colors.grey[300], thickness: 1),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Atau',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                       ),
                     ),
                     Expanded(
-                      child: Divider(
-                        color: Colors.grey[300],
-                        thickness: 1,
-                      ),
+                      child: Divider(color: Colors.grey[300], thickness: 1),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Tombol Login dengan Google
                 OutlinedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Fitur login dengan Google akan segera hadir'),
+                        content: Text(
+                          'Fitur login dengan Google akan segera hadir',
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -329,13 +323,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Tombol Login dengan Apple
                 OutlinedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Fitur login dengan Apple akan segera hadir'),
+                        content: Text(
+                          'Fitur login dengan Apple akan segera hadir',
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -355,7 +351,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Opsi Daftar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
